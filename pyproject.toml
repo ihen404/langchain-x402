@@ -1,23 +1,25 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "x402-tools-langchain"
-version = "0.1.4"
-description = "LangChain tool integration for x402 web scraper with HTTP 402 micro-transactions on Base."
+name = "ihen404-x402-langchain"
+version = "1.0.1"
+description = "LangChain integration tool for x402 payment-gated web scraping micro-services."
 readme = "README.md"
 requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    { name = "Ike Ambrose Hentrel II" }
+]
 dependencies = [
     "langchain-core>=0.1.0",
     "requests>=2.28.0",
     "pydantic>=2.0.0",
-    "eth-account>=0.8.0",
-    "web3>=6.0.0"
+    "web3>=6.0.0",
+    "eth-account>=0.8.0"
 ]
 
-[project.optional-dependencies]
-dev = [
-    "build",
-    "twine"
-]
+[project.urls]
+Homepage = "https://github.com/ihen404/langchain-x402"
+Repository = "https://github.com/ihen404/langchain-x402"
