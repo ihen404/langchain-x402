@@ -1,0 +1,29 @@
+{
+  "name": "@ihentrel/x402-scraper-langchain",
+  "version": "1.0.1",
+  "description": "Autonomous x402 web scraper tool for AI agents with automatic Base mainnet USDC micro-settlement",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node agent-runner.js",
+    "batch": "node batch-runner.js"
+  },
+  "keywords": [
+    "x402",
+    "http-402",
+    "base",
+    "usdc",
+    "agentic-web",
+    "langchain",
+    "mcp",
+    "scraper"
+  ],
+  "author": "ihen404",
+  "license": "MIT",
+  "dependencies": {
+    "@langchain/core": "^1.2.9",
+    "dotenv": "^16.4.5",
+    "viem": "^2.21.0",
+    "zod": "^4.6.0"
+  }
+}

@@ -1,0 +1,8 @@
+.env
+.env.*
+node_modules/
+test-tool.js
+batch-runner.js
+urls.json
+*.log
+.DS_Store
