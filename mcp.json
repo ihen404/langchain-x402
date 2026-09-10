@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schema/mcp.json",
+  "name": "io.github.ihen404/x402-scraper-langchain",
+  "version": "1.0.1",
+  "description": "Autonomous x402 web scraper tool for AI agents with automatic Base mainnet USDC micro-settlement.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ihen404/x402-scraper-client"
+  },
+  "packages": [
+    {
+      "registry": "npm",
+      "name": "@ihentrel/x402-scraper-langchain",
+      "version": "1.0.1"
+    }
+  ]
+}
