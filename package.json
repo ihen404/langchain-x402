@@ -6,7 +6,10 @@
   "type": "module",
   "scripts": {
     "start": "node agent-runner.js",
-    "batch": "node batch-runner.js"
+    "batch": "node batch-runner.js",
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "release:patch": "npm version patch && git push --follow-tags"
   },
   "keywords": [
     "x402",
