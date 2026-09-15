@@ -1,0 +1,47 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "x402 Scraper API",
+    "description": "Autonomous web scraper with Base mainnet USDC HTTP 402 micro-settlements.",
+    "version": "1.0.9"
+  },
+  "servers": [
+    {
+      "url": "https://YOUR_SERVER_URL",
+      "description": "Production API"
+    }
+  ],
+  "paths": {
+    "/scrape": {
+      "post": {
+        "summary": "Scrape web content",
+        "operationId": "scrapeUrl",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                },
+                "required": ["url"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scraped content returned successfully"
+          },
+          "402": {
+            "description": "Payment Required - Base USDC HTTP 402 header settlement needed"
+          }
+        }
+      }
+    }
+  }
+}
