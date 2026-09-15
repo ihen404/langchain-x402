@@ -86,3 +86,12 @@ export async function scrapeUrl(targetUrl, options = {}) {
 }
 
 export { x402ScraperTool } from "./langchain-tool.js";
+
+import fs from 'fs';
+import path from 'path';
+
+app.get('/openapi.json', (req, res) => {
+  const spec = fs.readFileSync(path.resolve('./openapi.json'), 'utf8');
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).send(spec);
+});
