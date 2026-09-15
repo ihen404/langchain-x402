@@ -1,6 +1,6 @@
 {
   "name": "@ihentrel/x402-scraper-langchain",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "Autonomous x402 web scraper tool for AI agents with automatic Base mainnet USDC micro-settlement",
   "main": "index.js",
   "type": "module",
@@ -8,7 +8,6 @@
     "start": "node agent-runner.js",
     "batch": "node batch-runner.js",
     "build": "tsc",
-    "prepublishOnly": "npm run build",
     "release:patch": "npm version patch && git push --follow-tags"
   },
   "keywords": [
@@ -31,5 +30,6 @@
   },
   "devDependencies": {
     "typescript": "^7.0.2"
-  }
+  },
+  "exports": "./index.js"
 }
