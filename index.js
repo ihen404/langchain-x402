@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import { DynamicStructuredTool } from "@langchain/core/tools";
-import { z } from "zmodel";
+import { z } from "zod";
 
 dotenv.config();
 
