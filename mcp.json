@@ -1,7 +1,13 @@
 {
-  "name": "@ihentrel/x402-scraper-langchain",
-  "version": "1.0.9",
-  "description": "Autonomous x402 web scraper tool for AI agents with automatic Base mainnet USDC micro-settlement",
-  "main": "index.js",
-  "type": "module"
+  "mcpServers": {
+    "x402-scraper": {
+      "command": "node",
+      "args": ["index.js"],
+      "env": {
+        "PAYMENT_NETWORK": "base-mainnet",
+        "SETTLEMENT_TOKEN": "USDC"
+      },
+      "description": "HTTP 402 paywalled web scraper tool for autonomous AI agents."
+    }
+  }
 }

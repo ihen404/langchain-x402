@@ -28,4 +28,10 @@ app.get('/openapi.json', (req, res) => {
   res.status(200).send(spec);
 });
 
+app.get('/mcp.json', (req, res) => {
+  const mcp = fs.readFileSync(path.resolve('./mcp.json'), 'utf8');
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).send(mcp);
+});
+
 export default app;
