@@ -34,4 +34,9 @@ app.get('/mcp.json', (req, res) => {
   res.status(200).send(mcp);
 });
 
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`[x402 Server] Express server listening on port ${PORT}`);
+});
+
 export default app;
