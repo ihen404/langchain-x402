@@ -1,6 +1,6 @@
 {
   "name": "@ihentrel/x402-scraper-langchain",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Autonomous x402 web scraper tool for AI agents with automatic Base mainnet USDC micro-settlement",
   "main": "index.js",
   "type": "module",
