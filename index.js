@@ -1,4 +1,5 @@
 import Express from "express";
+import cors from "cors";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
@@ -20,6 +21,7 @@ export const x402ScraperTool = new DynamicStructuredTool({
 });
 
 const app = Express();
+app.use(cors());
 app.use(Express.json());
 
 app.get('/openapi.json', (req, res) => {

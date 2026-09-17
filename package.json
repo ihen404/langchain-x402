@@ -24,6 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "@langchain/core": "^1.2.11",
+    "cors": "^2.8.6",
     "dotenv": "^16.6.1",
     "express": "^5.2.1",
     "viem": "^2.21.0",
