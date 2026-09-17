@@ -23,6 +23,7 @@
   "author": "ihen404",
   "license": "MIT",
   "dependencies": {
+    "@coinbase/agentkit": "^0.10.4",
     "@langchain/core": "^1.2.11",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
