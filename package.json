@@ -30,6 +30,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "pm2": "^7.0.4",
     "typescript": "^7.0.2"
   },
   "exports": "./index.js"
