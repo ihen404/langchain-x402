@@ -95,3 +95,12 @@ app.get('/openapi.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.status(200).send(spec);
 });
+
+import fs from 'fs';
+import path from 'path';
+
+app.get('/openapi.json', (req, res) => {
+  const spec = fs.readFileSync(path.resolve('./openapi.json'), 'utf8');
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).send(spec);
+});
