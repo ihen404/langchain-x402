@@ -1,3 +1,18 @@
+## 🌐 Social & Ecosystem Showcase
+
+> **Autonomous HTTP 402 Web Scraping Mesh on Base**  
+> Enables AI agents to pay $0.02 USDC per request for clean, LLM-ready markdown using machine-to-machine micro-settlements.
+
+### ⚡ Quick Links
+* **NPM Package:** [`@ihentrel/x402-express`](https://www.npmjs.com/package/@ihentrel/x402-express)
+* **Agent Discovery (MCP):** `https://your-domain.com/mcp.json`
+* **OpenAPI Specs:** `https://your-domain.com/openapi.json`
+
+### 📢 Share & Connect
+Building with autonomous agents or `@base`? Tag us on X/socials when integrating:
+- **X (Twitter):** Mention `@base` and `@CoinbaseDev` with `#BuildOnBase #AI #x402`
+- **Supported Frameworks:** LangChain, AutoGen, CrewAI, and MCP-compatible clients.
+
 # ihen404-x402-langchain
 
 LangChain integration tool for **HTTP 402 Paywalled Web Scraping** powered by Base USDC micro-payments.
@@ -64,3 +79,18 @@ print(response)
 ## License
 
 MIT License. Developed by [@ihen404](https://github.com/ihen404).
+
+## 🌐 Social & Ecosystem Showcase
+
+> **Autonomous HTTP 402 Web Scraping Mesh on Base**  
+> Enables AI agents to pay $0.02 USDC per request for clean, LLM-ready markdown using machine-to-machine micro-settlements.
+
+### ⚡ Quick Links
+* **NPM Package:** [`@ihentrel/x402-express`](https://www.npmjs.com/package/@ihentrel/x402-express)
+* **Agent Discovery (MCP):** `https://your-domain.com/mcp.json`
+* **OpenAPI Specs:** `https://your-domain.com/openapi.json`
+
+### 📢 Share & Connect
+Building with autonomous agents or `@base`? Tag us on X/socials when integrating:
+- **X (Twitter):** Mention `@base` and `@CoinbaseDev` with `#BuildOnBase #AI #x402`
+- **Supported Frameworks:** LangChain, AutoGen, CrewAI, and MCP-compatible clients.
