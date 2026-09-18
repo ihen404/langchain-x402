@@ -25,6 +25,7 @@
   "dependencies": {
     "@coinbase/agentkit": "^0.10.4",
     "@langchain/core": "^1.2.11",
+    "better-sqlite3": "^13.0.3",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
     "express": "^5.2.1",
@@ -32,8 +33,10 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@zenstackhq/runtime": "^2.22.3",
     "pm2": "^7.0.4",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "zenstack": "^2.22.3"
   },
   "exports": "./index.js"
 }
