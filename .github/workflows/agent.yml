@@ -10,12 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: npm
+
       - name: Install Dependencies
-        run: cd x402-scraper-client && npm install
+        run: npm install
+
       - name: Run On-Chain Agent Settlement
         env:
-          BASE_AGENT_PRIVATE_KEY: ${{ secrets.BASE_AGENT_PRIVATE_KEY }}
-        run: cd x402-scraper-client && node agent-runner.js
+          CDP_API_KEY_ID: ${{ secrets.CDP_API_KEY_ID }}
+          CDP_API_KEY_SECRET: ${{ secrets.CDP_API_KEY_SECRET }}
+          CDP_WALLET_SECRET: ${{ secrets.CDP_WALLET_SECRET }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: npx tsx index.ts
