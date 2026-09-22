@@ -36,12 +36,15 @@ async function runAgent() {
     throw new Error("Missing CDP API credentials. Check process.env or cdp_api_key.json.");
   }
 
-  // Read saved wallet data or initialize with empty object to force new wallet generation
+  // Load saved wallet data if file exists and is non-empty
   let cdpWalletData: string | undefined = process.env.CDP_WALLET_DATA?.trim();
 
   if (!cdpWalletData && fs.existsSync(WALLET_DATA_FILE)) {
     try {
-      cdpWalletData = fs.readFileSync(WALLET_DATA_FILE, "utf8").trim();
+      const savedData = fs.readFileSync(WALLET_DATA_FILE, "utf8").trim();
+      if (savedData.length > 0) {
+        cdpWalletData = savedData;
+      }
     } catch (e) {
       console.warn("Could not read local wallet_data.txt file.");
     }
@@ -49,15 +52,21 @@ async function runAgent() {
 
   const networkId = process.env.NETWORK_ID || "base-sepolia";
 
-  try {
-    const walletProvider = await CdpWalletProvider.configureWithWallet({
-      apiKeyName,
-      apiKeyPrivateKey,
-      cdpWalletData: cdpWalletData || "{}",
-      networkId,
-    });
+  const configOptions: any = {
+    apiKeyName,
+    apiKeyPrivateKey,
+    networkId,
+  };
 
-    // Export and persist initialized wallet state to wallet_data.txt
+  // Only assign cdpWalletData if we have valid non-empty wallet data
+  if (cdpWalletData) {
+    configOptions.cdpWalletData = cdpWalletData;
+  }
+
+  try {
+    const walletProvider = await CdpWalletProvider.configureWithWallet(configOptions);
+
+    // Export and persist wallet state locally
     const exportedData = await walletProvider.exportWallet();
     if (exportedData) {
       const walletDataStr = typeof exportedData === "string" 
