@@ -23,7 +23,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { MemorySaver } from "@langchain/langgraph";
 
-import { customPriceActionProvider } from "./customActionProvider.js";
+import { customPriceActionProvider } from "./customActionProvider";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
