@@ -24,17 +24,22 @@
   "license": "MIT",
   "dependencies": {
     "@coinbase/agentkit": "^0.10.4",
-    "@langchain/core": "^1.2.11",
+    "@coinbase/agentkit-langchain": "^0.3.0",
+    "@langchain/core": "^1.2.12",
+    "@langchain/langgraph": "^1.4.17",
+    "@langchain/openai": "^1.5.13",
     "better-sqlite3": "^13.0.3",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
     "express": "^5.2.1",
+    "graphql": "^17.0.2",
     "viem": "^2.21.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@zenstackhq/runtime": "^2.22.3",
     "pm2": "^7.0.4",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "zenstack": "^2.22.3"
   },
