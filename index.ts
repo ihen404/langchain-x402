@@ -1,5 +1,4 @@
-import { AgentKit, wethActionProvider, pythActionProvider, erc20ActionProvider, cdpApiActionProvider } from "@coinbase/agentkit";
-import { CdpEvmWalletProvider } from "@coinbase/agentkit-wallet-providers";
+import { AgentKit, CdpWalletProvider, wethActionProvider, pythActionProvider, erc20ActionProvider, cdpApiActionProvider } from "@coinbase/agentkit";
 import { getLangChainTools } from "@coinbase/agentkit-langchain";
 import { ChatOpenAI } from "@langchain/openai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
@@ -50,10 +49,10 @@ function isOpenAIQuotaError(error: unknown): boolean {
 
 async function runAgent() {
   console.log("Initializing CDP EVM Wallet Provider...");
-  const walletProvider = await CdpEvmWalletProvider.configureWithWallet({
+  const walletProvider = await CdpWalletProvider.configureWithWallet({
     apiKeyName: process.env.CDP_API_KEY_ID,
-    apiKeySecret: process.env.CDP_API_KEY_SECRET,
-    cdpWalletSecret: process.env.CDP_WALLET_SECRET,
+    apiKeyPrivateKey: process.env.CDP_API_KEY_SECRET,
+    cdpWalletData: process.env.CDP_WALLET_SECRET,
   });
 
   const address = await walletProvider.getAddress();
