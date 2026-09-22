@@ -20,19 +20,26 @@ async function runAgent() {
       const keyData = JSON.parse(fs.readFileSync(keyFilePath, "utf8"));
       apiKeyName = keyData.name || keyData.apiKeyName || apiKeyName;
       apiKeyPrivateKey = keyData.privateKey || keyData.apiKeySecret || apiKeyPrivateKey;
-      if (apiKeyPrivateKey) {
-        apiKeyPrivateKey = apiKeyPrivateKey.replace(/\\n/g, "\n");
-      }
     } catch (e) {
       console.warn("Could not parse local cdp_api_key.json file.");
     }
   }
 
+  // Sanitize key secret newline escapes
+  if (apiKeyPrivateKey) {
+    apiKeyPrivateKey = apiKeyPrivateKey.replace(/\\n/g, "\n");
+  }
+
+  // Extract raw API key ID if full path is provided (e.g. organizations/.../apiKeys/UUID)
+  if (apiKeyName && apiKeyName.includes("/")) {
+    const parts = apiKeyName.split("/");
+    apiKeyName = parts[parts.length - 1];
+  }
+
   const networkId = process.env.NETWORK_ID || "base-sepolia";
 
   try {
-    // configureWithApi initializes via API credentials directly without looking for existing wallet operations
-    const walletProvider = await CdpWalletProvider.configureWithApi({
+    const walletProvider = await CdpWalletProvider.configureWithWallet({
       apiKeyName,
       apiKeyPrivateKey,
       networkId,
