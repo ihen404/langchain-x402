@@ -7,6 +7,17 @@ import { baseSepolia } from "viem/chains";
 
 dotenv.config();
 
+// Disable AgentKit background telemetry reporting
+process.env.AGENTKIT_TELEMETRY_ENABLED = "false";
+
+// Suppress unhandled telemetry rejection crashes
+process.on("unhandledRejection", (reason) => {
+  if (String(reason).includes("sendAnalyticsEvent") || String(reason).includes("HTTP error")) {
+    return; // Ignore AgentKit telemetry failure
+  }
+  console.error("Unhandled Rejection:", reason);
+});
+
 const WALLET_KEY_FILE = "wallet_key.txt";
 
 async function runAgent() {
@@ -14,7 +25,6 @@ async function runAgent() {
 
   let privateKey: `0x${string}` | undefined;
 
-  // 1. Check for private key in environment variables or local file
   if (process.env.EVM_PRIVATE_KEY) {
     privateKey = process.env.EVM_PRIVATE_KEY.trim() as `0x${string}`;
   } else if (fs.existsSync(WALLET_KEY_FILE)) {
@@ -28,7 +38,6 @@ async function runAgent() {
     }
   }
 
-  // 2. If no private key exists, generate a fresh local EVM key and persist it
   if (!privateKey) {
     console.log("No saved wallet key found. Generating fresh local EVM key...");
     privateKey = generatePrivateKey();
@@ -38,7 +47,6 @@ async function runAgent() {
   try {
     const account = privateKeyToAccount(privateKey);
 
-    // Create viem client bound to Base Sepolia (or your target network)
     const walletClient = createWalletClient({
       account,
       chain: baseSepolia,
