@@ -31,7 +31,8 @@ async function runAgent() {
   const networkId = process.env.NETWORK_ID || "base-sepolia";
 
   try {
-    const walletProvider = await CdpWalletProvider.configureWithWallet({
+    // configureWithApi initializes via API credentials directly without looking for existing wallet operations
+    const walletProvider = await CdpWalletProvider.configureWithApi({
       apiKeyName,
       apiKeyPrivateKey,
       networkId,
