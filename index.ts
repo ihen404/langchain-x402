@@ -28,6 +28,25 @@ if (cdpSecret) {
   process.env.CDP_API_KEY_SECRET = cdpSecret.replace(/\\n/g, "\n");
 }
 
+function isOpenAIQuotaError(error: unknown): boolean {
+  const value = error as {
+    status?: number;
+    code?: string;
+    error?: { code?: string; type?: string };
+    message?: string;
+  };
+
+  return (
+    value?.status === 429 &&
+    (
+      value?.code === "insufficient_quota" ||
+      value?.error?.code === "insufficient_quota" ||
+      value?.error?.type === "insufficient_quota" ||
+      (typeof value?.message === "string" && value.message.toLowerCase().includes("no credits remaining"))
+    )
+  );
+}
+
 async function runAgent() {
   console.log("Initializing CDP EVM Wallet Provider...");
   const walletProvider = await CdpEvmWalletProvider.configureWithWallet({
@@ -77,6 +96,11 @@ async function runAgent() {
 }
 
 runAgent().catch((err) => {
+  if (isOpenAIQuotaError(err)) {
+    console.error("::error::OpenAI quota exhausted. Check billing and credit balance for OPENAI_API_KEY at platform.openai.com");
+    process.exit(1);
+  }
+
   console.error("Agent execution failed:", err);
   process.exit(1);
 });
