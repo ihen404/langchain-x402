@@ -2,49 +2,26 @@ name: Scheduled On-Chain Agent Execution
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 jobs:
-  execute-agent-payment:
+  run-agent:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: npm
-
-      - name: Validate CDP credentials
-        env:
-          CDP_API_KEY_ID: ${{ secrets.CDP_API_KEY_ID }}
-          CDP_API_KEY_SECRET: ${{ secrets.CDP_API_KEY_SECRET }}
-          CDP_WALLET_SECRET: ${{ secrets.CDP_WALLET_SECRET }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          set -euo pipefail
-          for name in CDP_API_KEY_ID CDP_API_KEY_SECRET CDP_WALLET_SECRET OPENAI_API_KEY; do
-            if [ -z "${!name:-}" ]; then
-              echo "::error::$name is missing"
-              exit 1
-            fi
-          done
-
-          secret="${CDP_API_KEY_SECRET//\\n/$'\n'}"
-
-          if [[ "$secret" == *"-----BEGIN"* ]]; then
-            if [[ "$secret" != *"-----END"* ]]; then
-              echo "::error::CDP_API_KEY_SECRET has an incomplete PEM key header/footer"
-              exit 1
-            fi
-          elif [[ "$secret" == \{* || "$secret" == \"* ]]; then
-            echo "::error::CDP_API_KEY_SECRET appears to be wrapped in JSON or quotes"
-            exit 1
-          fi
+          node-version: "20"
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Build Agent
+        run: npm run build:agent
 
       - name: Run On-Chain Agent Settlement
         env:
@@ -54,4 +31,4 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           AGENTKIT_DISABLE_ANALYTICS: "true"
           CI: "true"
-        run: npx tsx index.ts
+        run: node dist/index.js

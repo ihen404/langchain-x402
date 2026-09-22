@@ -1,4 +1,5 @@
-import { AgentKit, CdpEvmWalletProvider, wethActionProvider, pythActionProvider, erc20ActionProvider, cdpApiActionProvider } from "@coinbase/agentkit";
+import { AgentKit, wethActionProvider, pythActionProvider, erc20ActionProvider, cdpApiActionProvider } from "@coinbase/agentkit";
+import { CdpEvmWalletProvider } from "@coinbase/agentkit-wallet-providers";
 import { getLangChainTools } from "@coinbase/agentkit-langchain";
 import { ChatOpenAI } from "@langchain/openai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
