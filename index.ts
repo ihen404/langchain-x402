@@ -13,7 +13,7 @@ async function runAgent() {
     ? process.env.CDP_API_KEY_SECRET.replace(/\\n/g, "\n") 
     : undefined;
 
-  // Fallback to local cdp_api_key.json file if available
+  // Fallback to local cdp_api_key.json file
   const keyFilePath = path.resolve(process.cwd(), "cdp_api_key.json");
   if (fs.existsSync(keyFilePath)) {
     try {
@@ -28,23 +28,14 @@ async function runAgent() {
     }
   }
 
-  // Only pass wallet data if it's non-empty
-  const rawWalletData = process.env.CDP_WALLET_SECRET?.trim();
-  const cdpWalletData = rawWalletData && rawWalletData.length > 0 ? rawWalletData : undefined;
-
-  // Build options dynamically without forcing an invalid networkId string
-  const configOptions: Record<string, any> = {
-    apiKeyName,
-    apiKeyPrivateKey,
-    cdpWalletData,
-  };
-
-  if (process.env.NETWORK_ID) {
-    configOptions.networkId = process.env.NETWORK_ID;
-  }
+  const networkId = process.env.NETWORK_ID || "base-sepolia";
 
   try {
-    const walletProvider = await CdpWalletProvider.configureWithWallet(configOptions);
+    const walletProvider = await CdpWalletProvider.configureWithWallet({
+      apiKeyName,
+      apiKeyPrivateKey,
+      networkId,
+    });
 
     const address = await walletProvider.getAddress();
     console.log(`Wallet initialized successfully. Address: ${address}`);
