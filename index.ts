@@ -65,14 +65,14 @@ async function runAgent() {
         networkId,
       });
     } else {
-      // Create a brand new wallet explicitly using Coinbase SDK to avoid 404 fetch lookup
+      // Create a brand new wallet explicitly using Coinbase SDK and cast type to avoid duplicate module conflict
       console.log("No saved wallet found. Creating new CDP EVM Wallet...");
       const sdkWallet = await Wallet.create({ networkId });
       
       walletProvider = await CdpWalletProvider.configureWithWallet({
         apiKeyName,
         apiKeyPrivateKey,
-        wallet: sdkWallet,
+        wallet: sdkWallet as any,
         networkId,
       });
     }
