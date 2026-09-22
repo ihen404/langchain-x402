@@ -16,6 +16,33 @@ jobs:
           node-version: '24'
           cache: npm
 
+      - name: Validate CDP credentials
+        env:
+          CDP_API_KEY_ID: ${{ secrets.CDP_API_KEY_ID }}
+          CDP_API_KEY_SECRET: ${{ secrets.CDP_API_KEY_SECRET }}
+          CDP_WALLET_SECRET: ${{ secrets.CDP_WALLET_SECRET }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          for name in CDP_API_KEY_ID CDP_API_KEY_SECRET CDP_WALLET_SECRET OPENAI_API_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::$name is missing"
+              exit 1
+            fi
+          done
+
+          secret="${CDP_API_KEY_SECRET//\\n/$'\n'}"
+
+          if [[ "$secret" == *"-----BEGIN"* ]]; then
+            if [[ "$secret" != *"-----END"* ]]; then
+              echo "::error::CDP_API_KEY_SECRET has an incomplete PEM key header/footer"
+              exit 1
+            fi
+          elif [[ "$secret" == \{* || "$secret" == \"* ]]; then
+            echo "::error::CDP_API_KEY_SECRET appears to be wrapped in JSON or quotes"
+            exit 1
+          fi
+
       - name: Install Dependencies
         run: npm ci
 
