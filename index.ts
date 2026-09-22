@@ -1,14 +1,13 @@
+import "dotenv/config";
 import { AgentKit, CdpWalletProvider, wethActionProvider, pythActionProvider, erc20ActionProvider, cdpApiActionProvider } from "@coinbase/agentkit";
 import { getLangChainTools } from "@coinbase/agentkit-langchain";
 import { ChatOpenAI } from "@langchain/openai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { customPriceTool } from "./customActionProvider.js";
 
-// Disable background analytics telemetry
 process.env.AGENTKIT_DISABLE_ANALYTICS = "true";
 process.env.DISABLE_TELEMETRY = "true";
 
-// Safely handle analytics rejections without breaking execution
 process.on("unhandledRejection", (reason) => {
   const message = reason instanceof Error ? reason.message : String(reason);
   if (message.includes("HTTP error! status: 400") || message.toLowerCase().includes("analytic")) {
@@ -19,7 +18,6 @@ process.on("unhandledRejection", (reason) => {
   process.exit(1);
 });
 
-// Normalize CDP secret key
 let cdpSecret = process.env.CDP_API_KEY_SECRET?.trim();
 if (cdpSecret) {
   if ((cdpSecret.startsWith('"') && cdpSecret.endsWith('"')) || (cdpSecret.startsWith("'") && cdpSecret.endsWith("'"))) {
@@ -49,11 +47,17 @@ function isOpenAIQuotaError(error: unknown): boolean {
 
 async function runAgent() {
   console.log("Initializing CDP EVM Wallet Provider...");
-  const walletProvider = await CdpWalletProvider.configureWithWallet({
+  
+  const config: Record<string, any> = {
     apiKeyName: process.env.CDP_API_KEY_ID,
     apiKeyPrivateKey: process.env.CDP_API_KEY_SECRET,
-    cdpWalletData: process.env.CDP_WALLET_SECRET,
-  });
+  };
+
+  if (process.env.CDP_WALLET_SECRET && process.env.CDP_WALLET_SECRET.trim() !== "") {
+    config.cdpWalletData = process.env.CDP_WALLET_SECRET.trim();
+  }
+
+  const walletProvider = await CdpWalletProvider.configureWithWallet(config);
 
   const address = await walletProvider.getAddress();
   console.log(`Agent Wallet Address: ${address}`);
