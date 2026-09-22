@@ -1,92 +1,53 @@
-import { CdpWalletProvider } from "@coinbase/agentkit";
-import { Coinbase, Wallet } from "@coinbase/coinbase-sdk";
+import { ViemWalletProvider } from "@coinbase/agentkit";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
-import * as path from "path";
+import { createWalletClient, http } from "viem";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { baseSepolia } from "viem/chains";
 
 dotenv.config();
 
-const WALLET_DATA_FILE = "wallet_data.txt";
+const WALLET_KEY_FILE = "wallet_key.txt";
 
 async function runAgent() {
-  console.log("Initializing CDP EVM Wallet Provider...");
+  console.log("Initializing Viem EVM Wallet Provider...");
 
-  let apiKeyName = process.env.CDP_API_KEY_ID;
-  let apiKeyPrivateKey = process.env.CDP_API_KEY_SECRET 
-    ? process.env.CDP_API_KEY_SECRET.replace(/\\n/g, "\n") 
-    : undefined;
+  let privateKey: `0x${string}` | undefined;
 
-  // Fallback to local cdp_api_key.json file
-  const keyFilePath = path.resolve(process.cwd(), "cdp_api_key.json");
-  if (fs.existsSync(keyFilePath)) {
+  // 1. Check for private key in environment variables or local file
+  if (process.env.EVM_PRIVATE_KEY) {
+    privateKey = process.env.EVM_PRIVATE_KEY.trim() as `0x${string}`;
+  } else if (fs.existsSync(WALLET_KEY_FILE)) {
     try {
-      const keyData = JSON.parse(fs.readFileSync(keyFilePath, "utf8"));
-      apiKeyName = keyData.name || keyData.apiKeyName || apiKeyName;
-      apiKeyPrivateKey = keyData.privateKey || keyData.apiKeySecret || apiKeyPrivateKey;
-    } catch (e) {
-      console.warn("Could not parse local cdp_api_key.json file.");
-    }
-  }
-
-  if (apiKeyPrivateKey) {
-    apiKeyPrivateKey = apiKeyPrivateKey.replace(/\\n/g, "\n");
-  }
-
-  if (!apiKeyName || !apiKeyPrivateKey) {
-    throw new Error("Missing CDP API credentials. Check process.env or cdp_api_key.json.");
-  }
-
-  // Configure underlying Coinbase SDK instance
-  Coinbase.configure({ apiKeyName, privateKey: apiKeyPrivateKey });
-
-  const networkId = process.env.NETWORK_ID || "base-sepolia";
-  let cdpWalletData: string | undefined = process.env.CDP_WALLET_DATA?.trim();
-
-  if (!cdpWalletData && fs.existsSync(WALLET_DATA_FILE)) {
-    try {
-      const savedData = fs.readFileSync(WALLET_DATA_FILE, "utf8").trim();
-      if (savedData.length > 0) {
-        cdpWalletData = savedData;
+      const savedKey = fs.readFileSync(WALLET_KEY_FILE, "utf8").trim();
+      if (savedKey.startsWith("0x") && savedKey.length === 66) {
+        privateKey = savedKey as `0x${string}`;
       }
     } catch (e) {
-      console.warn("Could not read local wallet_data.txt file.");
+      console.warn("Could not read local wallet_key.txt file.");
     }
+  }
+
+  // 2. If no private key exists, generate a fresh local EVM key and persist it
+  if (!privateKey) {
+    console.log("No saved wallet key found. Generating fresh local EVM key...");
+    privateKey = generatePrivateKey();
+    fs.writeFileSync(WALLET_KEY_FILE, privateKey);
   }
 
   try {
-    let walletProvider: CdpWalletProvider;
+    const account = privateKeyToAccount(privateKey);
 
-    if (cdpWalletData) {
-      // Rehydrate existing wallet from exported wallet data string
-      walletProvider = await CdpWalletProvider.configureWithWallet({
-        apiKeyName,
-        apiKeyPrivateKey,
-        cdpWalletData,
-        networkId,
-      });
-    } else {
-      // Create a brand new wallet explicitly using Coinbase SDK and cast type to avoid duplicate module conflict
-      console.log("No saved wallet found. Creating new CDP EVM Wallet...");
-      const sdkWallet = await Wallet.create({ networkId });
-      
-      walletProvider = await CdpWalletProvider.configureWithWallet({
-        apiKeyName,
-        apiKeyPrivateKey,
-        wallet: sdkWallet as any,
-        networkId,
-      });
-    }
+    // Create viem client bound to Base Sepolia (or your target network)
+    const walletClient = createWalletClient({
+      account,
+      chain: baseSepolia,
+      transport: http(),
+    });
 
-    // Persist exported wallet state locally for subsequent runs
-    const exportedData = await walletProvider.exportWallet();
-    if (exportedData) {
-      const walletDataStr = typeof exportedData === "string" 
-        ? exportedData 
-        : JSON.stringify(exportedData);
-      fs.writeFileSync(WALLET_DATA_FILE, walletDataStr);
-    }
-
+    const walletProvider = new ViemWalletProvider(walletClient);
     const address = await walletProvider.getAddress();
+
     console.log(`Wallet initialized successfully! Address: ${address}`);
   } catch (error) {
     console.error("Agent execution failed:", error);
