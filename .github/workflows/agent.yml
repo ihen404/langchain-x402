@@ -52,5 +52,6 @@ jobs:
           CDP_API_KEY_SECRET: ${{ secrets.CDP_API_KEY_SECRET }}
           CDP_WALLET_SECRET: ${{ secrets.CDP_WALLET_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AGENTKIT_DISABLE_ANALYTICS: "true"
           CI: "true"
         run: npx tsx index.ts

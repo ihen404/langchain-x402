@@ -1,13 +1,26 @@
 import { AgentKit, CdpEvmWalletProvider, wethActionProvider, pythActionProvider, erc20ActionProvider, cdpApiActionProvider } from "@coinbase/agentkit";
 import { customPriceActionProvider } from "./customActionProvider";
 
+// Disable telemetry if supported by AgentKit
+process.env.AGENTKIT_DISABLE_ANALYTICS = "true";
+process.env.DISABLE_TELEMETRY = "true";
+
+// Safely ignore optional background analytics failures without masking real wallet/agent errors
+process.on("unhandledRejection", (reason) => {
+  const message = reason instanceof Error ? reason.message : String(reason);
+  if (message.includes("HTTP error! status: 400") || message.toLowerCase().includes("analytic")) {
+    console.warn("Ignoring optional AgentKit analytics failure:", message);
+    return;
+  }
+  console.error("Unhandled rejection:", reason);
+  process.exit(1);
+});
+
 let cdpSecret = process.env.CDP_API_KEY_SECRET?.trim();
 if (cdpSecret) {
-  // Strip outer quotes if accidentally pasted with quotes
   if ((cdpSecret.startsWith('"') && cdpSecret.endsWith('"')) || (cdpSecret.startsWith("'") && cdpSecret.endsWith("'"))) {
     cdpSecret = cdpSecret.slice(1, -1);
   }
-  // Convert literal \n sequences to real newlines for PEM format
   process.env.CDP_API_KEY_SECRET = cdpSecret.replace(/\\n/g, "\n");
 }
 
