@@ -2,7 +2,7 @@ import { AgentKit, CdpEvmWalletProvider, wethActionProvider, pythActionProvider,
 import { getLangChainTools } from "@coinbase/agentkit-langchain";
 import { ChatOpenAI } from "@langchain/openai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { customPriceTool } from "./customActionProvider";
+import { customPriceTool } from "./customActionProvider.js";
 
 // Disable background analytics telemetry
 process.env.AGENTKIT_DISABLE_ANALYTICS = "true";
