@@ -1,4 +1,5 @@
 import { CdpWalletProvider } from "@coinbase/agentkit";
+import { Coinbase, Wallet } from "@coinbase/coinbase-sdk";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as path from "path";
@@ -27,7 +28,6 @@ async function runAgent() {
     }
   }
 
-  // Sanitize key secret newline escapes
   if (apiKeyPrivateKey) {
     apiKeyPrivateKey = apiKeyPrivateKey.replace(/\\n/g, "\n");
   }
@@ -36,7 +36,10 @@ async function runAgent() {
     throw new Error("Missing CDP API credentials. Check process.env or cdp_api_key.json.");
   }
 
-  // Load saved wallet data if file exists and is non-empty
+  // Configure underlying Coinbase SDK instance
+  Coinbase.configure({ apiKeyName, privateKey: apiKeyPrivateKey });
+
+  const networkId = process.env.NETWORK_ID || "base-sepolia";
   let cdpWalletData: string | undefined = process.env.CDP_WALLET_DATA?.trim();
 
   if (!cdpWalletData && fs.existsSync(WALLET_DATA_FILE)) {
@@ -50,23 +53,31 @@ async function runAgent() {
     }
   }
 
-  const networkId = process.env.NETWORK_ID || "base-sepolia";
-
-  const configOptions: any = {
-    apiKeyName,
-    apiKeyPrivateKey,
-    networkId,
-  };
-
-  // Only assign cdpWalletData if we have valid non-empty wallet data
-  if (cdpWalletData) {
-    configOptions.cdpWalletData = cdpWalletData;
-  }
-
   try {
-    const walletProvider = await CdpWalletProvider.configureWithWallet(configOptions);
+    let walletProvider: CdpWalletProvider;
 
-    // Export and persist wallet state locally
+    if (cdpWalletData) {
+      // Rehydrate existing wallet from exported wallet data string
+      walletProvider = await CdpWalletProvider.configureWithWallet({
+        apiKeyName,
+        apiKeyPrivateKey,
+        cdpWalletData,
+        networkId,
+      });
+    } else {
+      // Create a brand new wallet explicitly using Coinbase SDK to avoid 404 fetch lookup
+      console.log("No saved wallet found. Creating new CDP EVM Wallet...");
+      const sdkWallet = await Wallet.create({ networkId });
+      
+      walletProvider = await CdpWalletProvider.configureWithWallet({
+        apiKeyName,
+        apiKeyPrivateKey,
+        wallet: sdkWallet,
+        networkId,
+      });
+    }
+
+    // Persist exported wallet state locally for subsequent runs
     const exportedData = await walletProvider.exportWallet();
     if (exportedData) {
       const walletDataStr = typeof exportedData === "string" 
