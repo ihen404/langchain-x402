@@ -2,7 +2,7 @@ import { AgentKit, CdpEvmWalletProvider, wethActionProvider, pythActionProvider,
 import { getLangChainTools } from "@coinbase/agentkit-langchain";
 import { ChatOpenAI } from "@langchain/openai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { customPriceActionProvider } from "./customActionProvider";
+import { customPriceTool } from "./customActionProvider";
 
 // Disable background analytics telemetry
 process.env.AGENTKIT_DISABLE_ANALYTICS = "true";
@@ -65,12 +65,12 @@ async function runAgent() {
       pythActionProvider(),
       erc20ActionProvider(),
       cdpApiActionProvider(),
-      customPriceActionProvider(),
     ],
   });
 
   console.log("Fetching LangChain tools from AgentKit...");
-  const tools = await getLangChainTools(agentKit);
+  const agentKitTools = await getLangChainTools(agentKit);
+  const tools = [...agentKitTools, customPriceTool];
 
   const llm = new ChatOpenAI({
     modelName: "gpt-4o-mini",
