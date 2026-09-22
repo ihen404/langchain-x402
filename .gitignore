@@ -2,3 +2,6 @@
 .npmrc
 node_modules
 x402_queue.db
+.env
+wallet_data.json
+cdp_api_key.json
