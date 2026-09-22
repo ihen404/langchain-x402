@@ -28,11 +28,15 @@ async function runAgent() {
     }
   }
 
+  // Only pass wallet data if it's a non-empty string
+  const rawWalletData = process.env.CDP_WALLET_SECRET?.trim();
+  const cdpWalletData = rawWalletData && rawWalletData.length > 0 ? rawWalletData : undefined;
+
   try {
     const walletProvider = await CdpWalletProvider.configureWithWallet({
       apiKeyName,
       apiKeyPrivateKey,
-      cdpWalletData: process.env.CDP_WALLET_SECRET || undefined,
+      cdpWalletData,
       networkId: process.env.NETWORK_ID || "base-sepolia",
     });
 
