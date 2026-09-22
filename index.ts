@@ -36,7 +36,7 @@ async function runAgent() {
     throw new Error("Missing CDP API credentials. Check process.env or cdp_api_key.json.");
   }
 
-  // Check for saved wallet data locally or in process.env
+  // Read saved wallet data or initialize with empty object to force new wallet generation
   let cdpWalletData: string | undefined = process.env.CDP_WALLET_DATA?.trim();
 
   if (!cdpWalletData && fs.existsSync(WALLET_DATA_FILE)) {
@@ -50,20 +50,14 @@ async function runAgent() {
   const networkId = process.env.NETWORK_ID || "base-sepolia";
 
   try {
-    // Pass cdpWalletData if present; otherwise configure options explicitly
-    const configOptions: any = {
+    const walletProvider = await CdpWalletProvider.configureWithWallet({
       apiKeyName,
       apiKeyPrivateKey,
+      cdpWalletData: cdpWalletData || "{}",
       networkId,
-    };
+    });
 
-    if (cdpWalletData && cdpWalletData.length > 0) {
-      configOptions.cdpWalletData = cdpWalletData;
-    }
-
-    const walletProvider = await CdpWalletProvider.configureWithWallet(configOptions);
-
-    // Export and save wallet data locally for future runs
+    // Export and persist initialized wallet state to wallet_data.txt
     const exportedData = await walletProvider.exportWallet();
     if (exportedData) {
       const walletDataStr = typeof exportedData === "string" 
