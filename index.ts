@@ -9,19 +9,19 @@ async function runAgent() {
   console.log("Initializing CDP EVM Wallet Provider...");
 
   let apiKeyName = process.env.CDP_API_KEY_ID;
-  let apiKeySecret = process.env.CDP_API_KEY_SECRET 
+  let apiKeyPrivateKey = process.env.CDP_API_KEY_SECRET 
     ? process.env.CDP_API_KEY_SECRET.replace(/\\n/g, "\n") 
     : undefined;
 
-  // Fallback to local cdp_api_key.json file if env vars are missing or fail
+  // Fallback to local cdp_api_key.json file
   const keyFilePath = path.resolve(process.cwd(), "cdp_api_key.json");
   if (fs.existsSync(keyFilePath)) {
     try {
       const keyData = JSON.parse(fs.readFileSync(keyFilePath, "utf8"));
       apiKeyName = keyData.name || keyData.apiKeyName || apiKeyName;
-      apiKeySecret = keyData.privateKey || keyData.apiKeySecret || apiKeySecret;
-      if (apiKeySecret) {
-        apiKeySecret = apiKeySecret.replace(/\\n/g, "\n");
+      apiKeyPrivateKey = keyData.privateKey || keyData.apiKeySecret || apiKeyPrivateKey;
+      if (apiKeyPrivateKey) {
+        apiKeyPrivateKey = apiKeyPrivateKey.replace(/\\n/g, "\n");
       }
     } catch (e) {
       console.warn("Could not parse local cdp_api_key.json file.");
@@ -31,7 +31,7 @@ async function runAgent() {
   try {
     const walletProvider = await CdpWalletProvider.configureWithWallet({
       apiKeyName,
-      apiKeySecret,
+      apiKeyPrivateKey,
       cdpWalletData: process.env.CDP_WALLET_SECRET || undefined,
       networkId: process.env.NETWORK_ID || "base-sepolia",
     });
