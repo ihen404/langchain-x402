@@ -32,12 +32,11 @@ async function runAgent() {
     apiKeyPrivateKey = apiKeyPrivateKey.replace(/\\n/g, "\n");
   }
 
-  // Preserve full organization path or UUID as passed by key file
   if (!apiKeyName || !apiKeyPrivateKey) {
     throw new Error("Missing CDP API credentials. Check process.env or cdp_api_key.json.");
   }
 
-  // Load existing wallet data from file or process env if available
+  // Check for saved wallet data locally or in process.env
   let cdpWalletData: string | undefined = process.env.CDP_WALLET_DATA?.trim();
 
   if (!cdpWalletData && fs.existsSync(WALLET_DATA_FILE)) {
@@ -51,17 +50,26 @@ async function runAgent() {
   const networkId = process.env.NETWORK_ID || "base-sepolia";
 
   try {
-    const walletProvider = await CdpWalletProvider.configureWithWallet({
+    // Pass cdpWalletData if present; otherwise configure options explicitly
+    const configOptions: any = {
       apiKeyName,
       apiKeyPrivateKey,
-      cdpWalletData: cdpWalletData && cdpWalletData.length > 0 ? cdpWalletData : undefined,
       networkId,
-    });
+    };
 
-    // Save exported wallet data for future sessions if it's new
+    if (cdpWalletData && cdpWalletData.length > 0) {
+      configOptions.cdpWalletData = cdpWalletData;
+    }
+
+    const walletProvider = await CdpWalletProvider.configureWithWallet(configOptions);
+
+    // Export and save wallet data locally for future runs
     const exportedData = await walletProvider.exportWallet();
     if (exportedData) {
-      fs.writeFileSync(WALLET_DATA_FILE, JSON.stringify(exportedData, null, 2));
+      const walletDataStr = typeof exportedData === "string" 
+        ? exportedData 
+        : JSON.stringify(exportedData);
+      fs.writeFileSync(WALLET_DATA_FILE, walletDataStr);
     }
 
     const address = await walletProvider.getAddress();
