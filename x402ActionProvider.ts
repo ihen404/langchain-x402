@@ -1,4 +1,4 @@
-import { customActionProvider } from "@coinbase/agentkit";
+import { ActionProvider, Network } from "@coinbase/agentkit";
 import { z } from "zod";
 
 const ScrapeX402Schema = z.object({
@@ -6,10 +6,13 @@ const ScrapeX402Schema = z.object({
   options: z.string().optional().describe("Optional configuration parameters for the scraper"),
 });
 
-export const x402ActionProvider = () =>
-  customActionProvider({
-    name: "x402-action-provider",
-    actions: [
+export class X402ActionProvider extends ActionProvider {
+  constructor() {
+    super("x402-action-provider", []);
+  }
+
+  getActions() {
+    return [
       {
         name: "scrape_x402_data",
         description: "Scrapes and parses structured web data using the x402 protocol / scraper module.",
@@ -29,5 +32,10 @@ export const x402ActionProvider = () =>
           }
         },
       },
-    ],
-  });
+    ];
+  }
+
+  supportsNetwork = (_network: Network) => true;
+}
+
+export const x402ActionProvider = () => new X402ActionProvider();
