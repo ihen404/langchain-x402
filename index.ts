@@ -57,7 +57,7 @@ async function runAgent() {
   });
 
   const walletProvider = new ViemWalletProvider(walletClient);
-  const address = await walletProvider.getAddress();
+  const address = (await walletProvider.getAddress()) as `0x${string}`;
 
   const balanceWei = await publicClient.getBalance({ address });
   const balanceEth = formatEther(balanceWei);
