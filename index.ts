@@ -14,7 +14,7 @@ import { createWalletClient, http } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
-import { x402ActionProvider } from "./x402ActionProvider";
+import { x402ActionProvider } from "./x402ActionProvider.js";
 
 dotenv.config();
 
