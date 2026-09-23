@@ -1,13 +1,33 @@
 {
-  "mcpServers": {
-    "x402-scraper": {
-      "command": "node",
-      "args": ["index.js"],
-      "env": {
-        "PAYMENT_NETWORK": "base-mainnet",
-        "SETTLEMENT_TOKEN": "USDC"
-      },
-      "description": "HTTP 402 paywalled web scraper tool for autonomous AI agents."
+  "$schema": "https://modelcontextprotocol.io/specification/2026-07-28/schema.json",
+  "mcpVersion": "2026-07-28",
+  "name": "@ihentrel/x402-scraper-langchain",
+  "description": "Protocol-native web scraping node with on-chain x402 micro-settlements on Base.",
+  "version": "1.0.22",
+  "tools": [
+    {
+      "name": "scrape_x402_data",
+      "description": "Scrapes and parses structured web data using the x402 protocol module.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "targetUrl": {
+            "type": "string",
+            "description": "The target URL or endpoint to perform x402 scraping on"
+          },
+          "options": {
+            "type": ["string", "null"],
+            "description": "Optional configuration parameters for the scraper"
+          }
+        },
+        "required": ["targetUrl"]
+      }
     }
+  ],
+  "payment": {
+    "protocol": "x402",
+    "network": "base-mainnet",
+    "asset": "USDC",
+    "unitPrice": "0.02"
   }
 }
