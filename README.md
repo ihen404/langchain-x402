@@ -1,96 +1,92 @@
-## 🌐 Social & Ecosystem Showcase
+# @ihentrel/x402-scraper-langchain
 
-> **Autonomous HTTP 402 Web Scraping Mesh on Base**  
-> Enables AI agents to pay $0.02 USDC per request for clean, LLM-ready markdown using machine-to-machine micro-settlements.
+[![npm version](https://img.shields.io/npm/v/@ihentrel/x402-scraper-langchain.svg)](https://www.npmjs.com/package/@ihentrel/x402-scraper-langchain)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Network](https://img.shields.io/badge/Network-Base%20Sepolia%20%2F%20Mainnet-blue)](https://base.org)
 
-### ⚡ Quick Links
-* **NPM Package:** [`@ihentrel/x402-express`](https://www.npmjs.com/package/@ihentrel/x402-express)
-* **Agent Discovery (MCP):** `https://your-domain.com/mcp.json`
-* **OpenAPI Specs:** `https://your-domain.com/openapi.json`
-
-### 📢 Share & Connect
-Building with autonomous agents or `@base`? Tag us on X/socials when integrating:
-- **X (Twitter):** Mention `@base` and `@CoinbaseDev` with `#BuildOnBase #AI #x402`
-- **Supported Frameworks:** LangChain, AutoGen, CrewAI, and MCP-compatible clients.
-
-# ihen404-x402-langchain
-
-LangChain integration tool for **HTTP 402 Paywalled Web Scraping** powered by Base USDC micro-payments.
-
-Designed specifically for **Autonomous AI Agents**, trading bots, and market research agents that require programmatic, pay-per-request web access without credit cards or monthly API subscriptions.
+Protocol-native web scraping utility tool engineered for autonomous AI agents, powered by **Coinbase AgentKit**, **LangChain**, and **x402 on-chain micro-settlements**.
 
 ---
 
-## Features
+## Key Features & Strategic Positioning
 
-- **Native LangChain Tool Integration:** Drop-in `X402WebScraperTool` for LangChain, LangGraph, and CrewAI agents.
-- **Automated HTTP 402 Settlement:** Automatically handles $0.005 Base USDC micro-payment challenges via `X-Payment` headers.
-- **Zero Friction for AI Agents:** Autonomous agents sign and settle transactions directly on Base L2 in milliseconds.
-
----
-
-## Installation
-
-```bash
-pip install ihen404-x402-langchain
-```
+* **Zero API Keys Required**: Agents discover, pay, and execute scraping requests mid-task without unhandled API key exceptions or rate limits.
+* **Predictable Operational Cost**: Flat **$0.02 USDC/request** settlement on Base, offering a transparent OpEx alternative to dynamic per-gigabyte proxy services.
+* **Token-Optimized Markdown**: HTML, navigation boilerplate, and DOM elements are automatically stripped into clean, token-dense Markdown to reduce LLM context window costs.
+* **Asynchronous Queue Resilience**: Underpinned by a decoupled `better-sqlite3` queue and `PM2` worker mesh to prevent payload failures under high concurrency.
+* **Ecosystem Ready**: Native support for **Model Context Protocol (MCP)** manifests (`/mcp.json`) and **ERC-8004** identity registration on Base.
 
 ---
 
 ## Quickstart
 
-```python
-import os
-from langchain_x402 import X402WebScraperTool
-from langchain.agents import initialize_agent, AgentType
-from langchain_openai import ChatOpenAI
+### 1. Installation
 
-# Initialize the 402-capable web scraper tool
-scraper_tool = X402WebScraperTool(
-    wallet_private_key=os.getenv("BASE_WALLET_PRIVATE_KEY"),
-    rpc_url="[https://mainnet.base.org](https://mainnet.base.org)",
-    max_price_per_scrape="0.005"  # Max USDC spend per request
-)
+```bash
+npm install @ihentrel/x402-scraper-langchain @coinbase/agentkit @langchain/openai
+```
 
-llm = ChatOpenAI(model="gpt-4o", temperature=0)
-agent = initialize_agent(
-    tools=[scraper_tool],
-    llm=llm,
-    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-    verbose=True
-)
+### 2. Basic Agent Usage
 
-# Agent autonomously handles HTTP 402 payment challenge if paywalled
-response = agent.run("Fetch data from [https://api.x402service.com/scrape?url=https://example.com](https://api.x402service.com/scrape?url=https://example.com)")
-print(response)
+```typescript
+import { AgentKit, ViemWalletProvider, walletActionProvider } from "@coinbase/agentkit";
+import { getLangChainTools } from "@coinbase/agentkit-langchain";
+import { ChatOpenAI } from "@langchain/openai";
+import { createReactAgent } from "@langchain/langgraph/prebuilt";
+import { x402ActionProvider } from "@ihentrel/x402-scraper-langchain";
+
+async function main() {
+  const agentKit = await AgentKit.from({
+    actionProviders: [walletActionProvider(), x402ActionProvider()],
+  });
+
+  const tools = await getLangChainTools(agentKit);
+  const agent = createReactAgent({
+    llm: new ChatOpenAI({ modelName: "gpt-4o-mini" }),
+    tools,
+  });
+
+  const response = await agent.invoke({
+    messages: [
+      {
+        role: "user",
+        content: "Use the x402 scraper tool to fetch data from https://api.example.com/x402-resource",
+      },
+    ],
+  });
+
+  console.log(response.messages[response.messages.length - 1].content);
+}
+
+main();
 ```
 
 ---
 
-## Pricing Structure
+## Model Context Protocol (MCP) Integration
 
-| Action | Cost | Settlement Network |
-| :--- | :--- | :--- |
-| Standard Web Scrape | **$0.005 USDC** | Base (L2) |
-| Failed Request | **$0.000 USDC** | N/A |
+For drop-in compatibility with MCP clients (e.g., Claude Desktop, Cursor, CrewAI):
+
+```json
+{
+  "mcpServers": {
+    "x402-scraper": {
+      "url": "https://raw.githubusercontent.com/ihen404/langchain-x402/main/mcp.json"
+    }
+  }
+}
+```
+
+---
+
+## On-Chain Verification
+
+* **Network**: Base Mainnet / Base Sepolia
+* **Protocol Standard**: ERC-8004 Agent Identity
+* **Settlement Asset**: USDC ($0.02 / request)
 
 ---
 
 ## License
 
-MIT License. Developed by [@ihen404](https://github.com/ihen404).
-
-## 🌐 Social & Ecosystem Showcase
-
-> **Autonomous HTTP 402 Web Scraping Mesh on Base**  
-> Enables AI agents to pay $0.02 USDC per request for clean, LLM-ready markdown using machine-to-machine micro-settlements.
-
-### ⚡ Quick Links
-* **NPM Package:** [`@ihentrel/x402-express`](https://www.npmjs.com/package/@ihentrel/x402-express)
-* **Agent Discovery (MCP):** `https://your-domain.com/mcp.json`
-* **OpenAPI Specs:** `https://your-domain.com/openapi.json`
-
-### 📢 Share & Connect
-Building with autonomous agents or `@base`? Tag us on X/socials when integrating:
-- **X (Twitter):** Mention `@base` and `@CoinbaseDev` with `#BuildOnBase #AI #x402`
-- **Supported Frameworks:** LangChain, AutoGen, CrewAI, and MCP-compatible clients.
+MIT © Ike Ambrose Hentrel II
