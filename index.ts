@@ -10,7 +10,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
-import { createWalletClient, http } from "viem";
+import { createPublicClient, createWalletClient, formatEther, http } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
@@ -44,6 +44,12 @@ async function runAgent() {
   }
 
   const account = privateKeyToAccount(privateKey);
+
+  const publicClient = createPublicClient({
+    chain: baseSepolia,
+    transport: http(),
+  });
+
   const walletClient = createWalletClient({
     account,
     chain: baseSepolia,
@@ -51,6 +57,22 @@ async function runAgent() {
   });
 
   const walletProvider = new ViemWalletProvider(walletClient);
+  const address = await walletProvider.getAddress();
+
+  const balanceWei = await publicClient.getBalance({ address });
+  const balanceEth = formatEther(balanceWei);
+
+  console.log(`\n==================================================`);
+  console.log(`Agent Active | Wallet Address: ${address}`);
+  console.log(`Base Sepolia ETH Balance: ${balanceEth} ETH`);
+  console.log(`==================================================\n`);
+
+  if (balanceWei === 0n) {
+    console.warn(`[WARNING] Balance is 0 ETH. On-chain settlements will fail due to lack of gas.`);
+    console.warn(`Fund this wallet using a Base Sepolia Faucet:`);
+    console.warn(`1. QuickNode Faucet: https://faucet.quicknode.com/base/sepolia`);
+    console.warn(`2. Base Official Faucet: https://www.bwarelabs.com/faucets/base-sepolia\n`);
+  }
 
   const agentKit = await AgentKit.from({
     walletProvider,
@@ -73,9 +95,6 @@ async function runAgent() {
     llm,
     tools,
   });
-
-  const address = await walletProvider.getAddress();
-  console.log(`Agent Active | Wallet Address: ${address}`);
 
   const response = await agent.invoke({
     messages: [
