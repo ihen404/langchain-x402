@@ -9,7 +9,6 @@ const ScrapeX402Schema = z.object({
 export const x402ActionProvider = () =>
   customActionProvider({
     name: "x402-action-provider",
-    actionProviders: [],
     actions: [
       {
         name: "scrape_x402_data",
