@@ -1,65 +1,93 @@
-import { ViemWalletProvider } from "@coinbase/agentkit";
+import {
+  AgentKit,
+  ViemWalletProvider,
+  walletActionProvider,
+  erc20ActionProvider,
+  pythActionProvider,
+} from "@coinbase/agentkit";
+import { getLangChainTools } from "@coinbase/agentkit-langchain";
+import { ChatOpenAI } from "@langchain/openai";
+import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import { createWalletClient, http } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
+import { x402ActionProvider } from "./x402ActionProvider";
+
 dotenv.config();
 
-// Disable AgentKit background telemetry reporting
 process.env.AGENTKIT_TELEMETRY_ENABLED = "false";
-
-// Suppress unhandled telemetry rejection crashes
 process.on("unhandledRejection", (reason) => {
-  if (String(reason).includes("sendAnalyticsEvent") || String(reason).includes("HTTP error")) {
-    return; // Ignore AgentKit telemetry failure
-  }
+  if (String(reason).includes("sendAnalyticsEvent") || String(reason).includes("HTTP error")) return;
   console.error("Unhandled Rejection:", reason);
 });
 
 const WALLET_KEY_FILE = "wallet_key.txt";
 
 async function runAgent() {
-  console.log("Initializing Viem EVM Wallet Provider...");
-
   let privateKey: `0x${string}` | undefined;
 
   if (process.env.EVM_PRIVATE_KEY) {
     privateKey = process.env.EVM_PRIVATE_KEY.trim() as `0x${string}`;
   } else if (fs.existsSync(WALLET_KEY_FILE)) {
-    try {
-      const savedKey = fs.readFileSync(WALLET_KEY_FILE, "utf8").trim();
-      if (savedKey.startsWith("0x") && savedKey.length === 66) {
-        privateKey = savedKey as `0x${string}`;
-      }
-    } catch (e) {
-      console.warn("Could not read local wallet_key.txt file.");
+    const savedKey = fs.readFileSync(WALLET_KEY_FILE, "utf8").trim();
+    if (savedKey.startsWith("0x") && savedKey.length === 66) {
+      privateKey = savedKey as `0x${string}`;
     }
   }
 
   if (!privateKey) {
-    console.log("No saved wallet key found. Generating fresh local EVM key...");
     privateKey = generatePrivateKey();
     fs.writeFileSync(WALLET_KEY_FILE, privateKey);
   }
 
-  try {
-    const account = privateKeyToAccount(privateKey);
+  const account = privateKeyToAccount(privateKey);
+  const walletClient = createWalletClient({
+    account,
+    chain: baseSepolia,
+    transport: http(),
+  });
 
-    const walletClient = createWalletClient({
-      account,
-      chain: baseSepolia,
-      transport: http(),
-    });
+  const walletProvider = new ViemWalletProvider(walletClient);
 
-    const walletProvider = new ViemWalletProvider(walletClient);
-    const address = await walletProvider.getAddress();
+  const agentKit = await AgentKit.from({
+    walletProvider,
+    actionProviders: [
+      walletActionProvider(),
+      erc20ActionProvider(),
+      pythActionProvider(),
+      x402ActionProvider(),
+    ],
+  });
 
-    console.log(`Wallet initialized successfully! Address: ${address}`);
-  } catch (error) {
-    console.error("Agent execution failed:", error);
-  }
+  const tools = await getLangChainTools(agentKit);
+
+  const llm = new ChatOpenAI({
+    modelName: "gpt-4o-mini",
+    temperature: 0,
+  });
+
+  const agent = createReactAgent({
+    llm,
+    tools,
+  });
+
+  const address = await walletProvider.getAddress();
+  console.log(`Agent Active | Wallet Address: ${address}`);
+
+  const response = await agent.invoke({
+    messages: [
+      {
+        role: "user",
+        content: "Use the x402 scraper tool to fetch data from https://api.example.com/x402-resource",
+      },
+    ],
+  });
+
+  const lastMessage = response.messages[response.messages.length - 1];
+  console.log("\nAgent Final Output:\n", lastMessage.content);
 }
 
 runAgent();
