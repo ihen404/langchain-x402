@@ -3,7 +3,7 @@ import { z } from "zod";
 
 const ScrapeX402Schema = z.object({
   targetUrl: z.string().describe("The target URL or endpoint to perform x402 scraping on"),
-  options: z.string().optional().describe("Optional configuration parameters for the scraper"),
+  options: z.string().optional().nullable().describe("Optional configuration parameters for the scraper"),
 });
 
 export class X402ActionProvider extends ActionProvider {
