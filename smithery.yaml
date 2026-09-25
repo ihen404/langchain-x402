@@ -1,0 +1,6 @@
+runtime: "typescript"
+entrypoint: "mcp-server.mjs"
+env:
+  - name: TARGET_SCRAPE_URL
+    description: "The live paywalled target endpoint for x402 scraping"
+    required: false

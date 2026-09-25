@@ -1,0 +1,16 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "io.github.ihen404/x402-scraper",
+  "description": "Autonomous HTTP 402 Web Scraping Mesh on Base for $0.02 USDC.",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/ihen404/langchain-x402",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://your-domain.com/mcp.json"
+    }
+  ]
+}

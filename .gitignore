@@ -7,3 +7,5 @@ wallet_data.json
 cdp_api_key.json
 wallet_data.txt
 wallet_key.txt
+.mcpregistry_github_token
+.mcpregistry_registry_token

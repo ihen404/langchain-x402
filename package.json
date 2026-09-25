@@ -1,6 +1,6 @@
 {
   "name": "@ihentrel/x402-scraper-langchain",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "Autonomous x402 web scraper tool for AI agents with automatic Base mainnet USDC micro-settlement",
   "main": "index.js",
   "type": "module",
@@ -30,6 +30,7 @@
     "@langchain/core": "^0.3.80",
     "@langchain/langgraph": "^0.2.74",
     "@langchain/openai": "^0.3.17",
+    "@modelcontextprotocol/sdk": "^1.30.1",
     "better-sqlite3": "^13.0.3",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
