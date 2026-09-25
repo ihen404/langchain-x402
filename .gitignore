@@ -9,3 +9,10 @@ wallet_data.txt
 wallet_key.txt
 .mcpregistry_github_token
 .mcpregistry_registry_token
+
+# Credentials & Tokens
+.env
+.env.local
+.mcpregistry_github_token
+.mcpregistry_registry_token
+*.token
