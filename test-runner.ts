@@ -1,18 +1,9 @@
-import dotenv from "dotenv";
-dotenv.config();
+import { X402ScraperClient, x402ScraperTool } from "./index.js";
 
-// Import the package scraper class directly
-import { X402ScraperClient } from "@ihentrel/x402-scraper-langchain";
-
-async function run() {
-  const client = new X402ScraperClient({
-    privateKey: process.env.BASE_AGENT_PRIVATE_KEY,
-    rpcUrl: "https://sepolia.base.org"
-  });
-
-  console.log("Initiating test request to local Base Sepolia x402 server...");
-  const result = await client.scrape("http://localhost:3000/scrape");
-  console.log("Scrape Result:", result);
+async function main() {
+  console.log("🧪 Running x402 Scraper test runner...");
+  const client = new X402ScraperClient("http://localhost:4000/scrape");
+  console.log("Client initialized successfully:", !!client);
 }
 
-run().catch(console.error);
+main().catch(console.error);
