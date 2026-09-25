@@ -3,11 +3,18 @@ export { x402ActionProvider };
 export class x402ScraperTool {
     name = 'x402_scraper';
     description = 'Pay-per-request web scraper agent with structured JSON output via x402 on Base.';
-    async _call(input) {
-        const response = await fetch(process.env.TARGET_SCRAPE_URL || 'http://localhost:4000/scrape', {
+    config;
+    constructor(config) {
+        this.config = config;
+    }
+    async invoke(input) {
+        return this.scrape(input.input);
+    }
+    async scrape(targetUrl) {
+        const response = await fetch(process.env.TARGET_SCRAPE_URL || targetUrl || 'http://localhost:4000/scrape', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(input)
+            body: JSON.stringify({ targetUrl })
         });
         return await response.json();
     }

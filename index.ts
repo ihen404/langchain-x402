@@ -2,15 +2,30 @@ import { x402ActionProvider } from './x402ActionProvider.js';
 
 export { x402ActionProvider };
 
+export interface ScraperToolConfig {
+  privateKey?: string;
+  rpcUrl?: string;
+  usdcAddress?: string;
+}
+
 export class x402ScraperTool {
   name = 'x402_scraper';
   description = 'Pay-per-request web scraper agent with structured JSON output via x402 on Base.';
+  private config?: ScraperToolConfig;
 
-  async _call(input: { targetUrl: string }) {
-    const response = await fetch(process.env.TARGET_SCRAPE_URL || 'http://localhost:4000/scrape', {
+  constructor(config?: ScraperToolConfig) {
+    this.config = config;
+  }
+
+  async invoke(input: { input: string }) {
+    return this.scrape(input.input);
+  }
+
+  async scrape(targetUrl: string) {
+    const response = await fetch(process.env.TARGET_SCRAPE_URL || targetUrl || 'http://localhost:4000/scrape', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(input)
+      body: JSON.stringify({ targetUrl })
     });
     return await response.json();
   }
