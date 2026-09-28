@@ -18,4 +18,19 @@ app.get("/scrape", (req, res) => {
   res.json({ success: true, data: "Scraped content from Base Sepolia test server!" });
 });
 
+
+app.get("/.well-known/mcp/server-card.json", (req, res) => {
+  res.json({
+    "$schema": "https://smithery.ai/mcp-server-card.schema.json",
+    "name": "x402-scraper",
+    "description": "Autonomous pay-per-request web scraper operating on Base using x402 microtransactions.",
+    "version": "1.0.23",
+    "transport": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["server.mjs"]
+    }
+  });
+});
+
 app.listen(4000, () => console.log("🚀 Fresh Base Sepolia Server listening on http://localhost:4000/scrape"));
