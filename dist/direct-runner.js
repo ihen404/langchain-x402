@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-import * as pkg from "./index";
+import * as pkg from "./index.js";
 async function run() {
     console.log("Exported package keys:", Object.keys(pkg));
     // Instantiate default export or tool
