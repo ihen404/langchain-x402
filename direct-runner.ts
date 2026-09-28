@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import * as pkg from "@ihentrel/x402-scraper-langchain";
+import * as pkg from "./index";
 
 async function run() {
   console.log("Exported package keys:", Object.keys(pkg));
