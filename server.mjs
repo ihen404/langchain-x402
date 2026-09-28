@@ -79,6 +79,42 @@ app.get("/.well-known/mcp.json", (req, res) => {
 });
 });
 
+
+// Smithery Discovery Metadata Routes
+app.get("/.well-known/mcp/server-card.json", (_req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.status(200).send(JSON.stringify({
+  "$schema": "https://smithery.ai/mcp-server-card.schema.json",
+  "name": "x402-scraper",
+  "description": "Autonomous pay-per-request web scraper operating on Base using x402 microtransactions.",
+  "version": "1.0.23",
+  "transport": {
+    "type": "stdio",
+    "command": "node",
+    "args": [
+      "dist/index.js"
+    ]
+  }
+}));
+});
+
+app.get("/.well-known/mcp.json", (_req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.status(200).send(JSON.stringify({
+  "$schema": "https://smithery.ai/mcp-server-card.schema.json",
+  "name": "x402-scraper",
+  "description": "Autonomous pay-per-request web scraper operating on Base using x402 microtransactions.",
+  "version": "1.0.23",
+  "transport": {
+    "type": "stdio",
+    "command": "node",
+    "args": [
+      "dist/index.js"
+    ]
+  }
+}));
+});
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server listening on port ${PORT}`);
 });
